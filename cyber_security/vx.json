@@ -1,0 +1,29 @@
+{
+    "created_time": "2023-07-25T06:58:41Z",
+    "files": [
+    ],
+    "folders": [
+        {
+            "name": "工具使用方法"
+        },
+        {
+            "name": "web安全"
+        },
+        {
+            "name": "AWD"
+        },
+        {
+            "name": "渗透"
+        },
+        {
+            "name": "防御"
+        },
+        {
+            "name": "网安"
+        }
+    ],
+    "id": "1",
+    "modified_time": "2023-07-25T06:58:41Z",
+    "signature": "177783927457",
+    "version": 3
+}
