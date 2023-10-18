@@ -31,6 +31,8 @@ find whereis which
 **筛选命令**
 grep awk sed 
 ## 非漏洞提权
+## 脏牛提权(linux)
+## PR提权(windows)
 ### suid提权
 #### 文件权限概述
 ##### 普通文件权限
@@ -454,8 +456,8 @@ select func_name('cmds');
 创建一个mof文件，写入命令执行代码
 MySQL中将该文件写入到C:/Windows/System32/wbem/MOF/nullevt.mof中
 等待定时任务执行该代码
-#### 启动项提权
-
+### 启动项提权
+### SQL server xp_cmdshell提权
 ### 搜索密码提权
 ### 相关检测脚本
 ## 漏洞提权
